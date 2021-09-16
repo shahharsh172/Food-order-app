@@ -1,4 +1,4 @@
-import React, { useContext, useState, Fragment } from "react";
+import React, { useContext, useState } from "react";
 
 import Modal from "../UI/Modal";
 import CartItem from "./CartItem";
@@ -20,7 +20,7 @@ const Cart = (props) => {
   };
 
   const cartItemAddHandler = (item) => {
-    cartCtx.addItem({ ...item, amount: 1 });
+    cartCtx.addItem(item);
   };
 
   const orderHandler = () => {
@@ -29,17 +29,13 @@ const Cart = (props) => {
 
   const submitOrderHandler = async (userData) => {
     setIsSubmitting(true);
-
-    await fetch(
-      "https://react-http-dae16-default-rtdb.firebaseio.com/orders.json",
-      {
-        method: "POST",
-        body: JSON.stringify({
-          user: userData,
-          orderedItems: cartCtx.items,
-        }),
-      }
-    );
+    await fetch("https://react-http-6b4a6.firebaseio.com/orders.json", {
+      method: "POST",
+      body: JSON.stringify({
+        user: userData,
+        orderedItems: cartCtx.items,
+      }),
+    });
     setIsSubmitting(false);
     setDidSubmit(true);
     cartCtx.clearCart();
@@ -72,6 +68,7 @@ const Cart = (props) => {
       )}
     </div>
   );
+
   const cartModalContent = (
     <React.Fragment>
       {cartItems}
@@ -86,23 +83,17 @@ const Cart = (props) => {
     </React.Fragment>
   );
 
-  const isSubmittingModalContent = <p>Sending order data..</p>;
+  const isSubmittingModalContent = <p>Sending order data...</p>;
+
   const didSubmitModalContent = (
-    <>
-      <p>
-        SuccesFully sent the order!
-        <div className={classes.actions}>
-          <button className={classes["button--alt"]} onClick={props.onClose}>
-            Close
-          </button>
-          {hasItems && (
-            <button className={classes.button} onClick={orderHandler}>
-              Order
-            </button>
-          )}
-        </div>
-      </p>
-    </>
+    <React.Fragment>
+      <p>Successfully sent the order!</p>
+      <div className={classes.actions}>
+        <button className={classes.button} onClick={props.onClose}>
+          Close
+        </button>
+      </div>
+    </React.Fragment>
   );
 
   return (
